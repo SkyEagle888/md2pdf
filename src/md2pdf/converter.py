@@ -1,8 +1,6 @@
 """Markdown to PDF conversion engine."""
 
-import io
 import logging
-import tempfile
 from pathlib import Path
 from typing import Optional
 
@@ -47,53 +45,6 @@ class Converter:
         self.margin = margin
         self.custom_css = css  # Not used in markdown-pdf
 
-    def convert(self, markdown_content: str) -> bytes:
-        """
-        Convert Markdown content to PDF.
-
-        Args:
-            markdown_content: The markdown text to convert
-
-        Returns:
-            PDF bytes
-
-        Raises:
-            Exception: If conversion fails
-        """
-        # Create a temporary file for the markdown content
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".md", delete=False, encoding="utf-8"
-        ) as tmp:
-            tmp.write(markdown_content)
-            tmp_path = tmp.name
-
-        try:
-            # Create section from the markdown file
-            section = Section(
-                "Document",
-                toc=False,
-                root=str(self.base_dir) if self.base_dir else ".",
-                paper_size=self.page_size,
-            )
-
-            # Create PDF
-            pdf = MarkdownPdf(
-                toc_level=0,
-                optimize=True,
-            )
-            pdf.add_section(section)
-
-            # Save to bytes
-            output = io.BytesIO()
-            pdf.save(output)
-            pdf_bytes = output.getvalue()
-
-            return pdf_bytes
-
-        finally:
-            # Clean up temp file
-            Path(tmp_path).unlink(missing_ok=True)
-
     def convert_file(self, input_path: Path, output_path: Path) -> None:
         """
         Convert a markdown file to PDF.
@@ -112,9 +63,12 @@ class Converter:
         # Set base directory for relative path resolution
         self.base_dir = get_asset_base_dir(input_path)
 
+        # Read the markdown content
+        markdown_content = input_path.read_text(encoding="utf-8")
+
         # Create section from the markdown file
         section = Section(
-            "Document",
+            markdown_content,
             toc=False,
             root=str(self.base_dir) if self.base_dir else ".",
             paper_size=self.page_size,

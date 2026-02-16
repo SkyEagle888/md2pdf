@@ -48,20 +48,20 @@
 - [x] 4.1 Create test document `testdata/sample.md`
   - [x] Include: headings, lists, blockquote, code block
   - [x] Include: basic table
-  - [ ] Include: embedded image (relative path) - missing asset
+  - [x] Include: embedded image (relative path)
   - [x] Include: Traditional Chinese text
-- [ ] 4.2 Add test image asset
+- [x] 4.2 Add test image asset
 - [x] 4.3 Manual test: verify PDF output
   - [x] Text selectable/copyable
-  - [ ] Unicode (Chinese) preserved - needs visual verification
+  - [x] Unicode (Chinese) preserved
   - [x] Code blocks monospaced
-  - [ ] Images render correctly - needs test asset
+  - [x] Images render correctly
 
 ### Phase 5: Distribution
 
-- [ ] 5.1 Windows: Build .exe with PyInstaller
+- [x] 5.1 Windows: Build .exe with PyInstaller
 - [ ] 5.2 Ubuntu: Document installation methods (pipx, pip)
-- [ ] 5.3 Create release artifacts (zip for Windows)
+- [x] 5.3 Create release artifacts (zip for Windows)
 
 ---
 
