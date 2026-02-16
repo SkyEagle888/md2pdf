@@ -1,24 +1,29 @@
 [project]
 name = "md2pdf"
-version = "0.1.0"
+dynamic = ["version"]
 description = "A cross-platform CLI tool that converts Markdown to text-selectable PDFs"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "markdown-pdf>=1.0",
+    "pygments>=2.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pyinstaller>=6.0",
+    "hatch-vcs>=0.4",
 ]
 
 [project.scripts]
 md2pdf = "md2pdf.cli:main"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/md2pdf"]
+
+[tool.hatch.version]
+source = "vcs"

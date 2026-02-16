@@ -62,13 +62,6 @@ Examples:
     )
 
     parser.add_argument(
-        "--css",
-        type=str,
-        metavar="PATH",
-        help="Custom CSS file to control fonts and styling",
-    )
-
-    parser.add_argument(
         "--page-size",
         type=str,
         default="A4",
@@ -81,12 +74,6 @@ Examples:
         type=str,
         default="10mm",
         help="Page margin (e.g., 10mm, 1in, 2cm)",
-    )
-
-    parser.add_argument(
-        "--toc",
-        action="store_true",
-        help="Include a table of contents",
     )
 
     parser.add_argument(
@@ -144,21 +131,15 @@ def main(args: list[str] | None = None) -> int:
         logger.error(f"Output path not writable: {parsed.output or output_path} - {e}")
         return EXIT_OUTPUT_NOT_WRITABLE
 
-    # Validate CSS file if provided
-    css_path = None
-    if parsed.css:
-        css_path = Path(parsed.css)
-        if not css_path.exists():
-            logger.error(f"CSS file not found: {parsed.css}")
-            return EXIT_INPUT_NOT_FOUND
-
     # Create converter
     try:
         converter = Converter(
-            css=str(css_path) if css_path else None,
             page_size=parsed.page_size,
             margin=parsed.margin,
         )
+    except ValueError as e:
+        logger.error(f"Invalid argument: {e}")
+        return EXIT_INVALID_USAGE
     except Exception as e:
         logger.error(f"Failed to initialize converter: {e}")
         return EXIT_GENERIC_FAILURE
@@ -168,7 +149,7 @@ def main(args: list[str] | None = None) -> int:
         if not parsed.quiet:
             logger.info(f"Converting: {input_path} -> {output_path}")
 
-        converter.convert_file(input_path, output_path)
+        converter.convert_file(input_path, output_path, verbose=parsed.verbose)
 
         if not parsed.quiet:
             logger.info(f"Success! PDF created: {output_path}")
@@ -176,10 +157,24 @@ def main(args: list[str] | None = None) -> int:
         return EXIT_SUCCESS
 
     except FileNotFoundError as e:
-        logger.error(f"Input file not found: {e}")
+        error_msg = str(e)
+        if "Missing image" in error_msg:
+            logger.error(f"Missing asset: {error_msg}")
+        else:
+            logger.error(f"Input file not found: {error_msg}")
         return EXIT_INPUT_NOT_FOUND
+    except PermissionError as e:
+        logger.error(
+            f"Permission denied: Cannot write to '{parsed.output or output_path}'. "
+            f"Check that you have write access to the output directory."
+        )
+        return EXIT_OUTPUT_NOT_WRITABLE
     except Exception as e:
-        logger.error(f"Conversion failed: {e}")
+        error_msg = str(e)
+        logger.error(f"Conversion failed: {error_msg}")
+        logger.error(
+            "Tip: Run with --verbose to see detailed error information."
+        )
         if parsed.verbose:
             import traceback
 

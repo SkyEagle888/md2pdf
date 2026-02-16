@@ -36,8 +36,8 @@ Build a small cross-platform command-line application that converts Markdown fil
 - Paragraphs, emphasis (bold/italic), inline code
 - Ordered/unordered lists
 - Blockquotes
-- Fenced code blocks (triple backticks), with monospace font
-- Basic tables (nice-to-have; include if low effort)
+- Fenced code blocks (triple backticks) with **syntax highlighting** (300+ languages)
+- Basic tables
 - Images (embedded into the PDF)
 
 ### 2.4 Implementation stack (v0.1)
@@ -45,7 +45,9 @@ Build a small cross-platform command-line application that converts Markdown fil
 - **Language**: Python 3.10+
 - **Markdown Parser**: `markdown-it-py` (via markdown-pdf)
 - **PDF Engine**: `PyMuPDF` - lightweight, no browser needed
+- **Syntax Highlighting**: `Pygments` - 300+ language support
 - **Packaging**: PyInstaller for Windows `.exe` (~29MB, standalone)
+- **Version Management**: `hatch-vcs` for automatic versioning from Git tags
 
 ### 2.5 Rendering approach (implementation constraint for v0.1)
 
@@ -79,11 +81,9 @@ Required:
 Optional:
 
 - `-o, --output <path>`: Output PDF path (default: `<input_basename>.pdf` in same folder).
-- `--css <path>`: Optional CSS file to control fonts and styling.
-- `--page-size <A4|Letter|...>`: Page size preset (implementation may map to CSS).
-- `--margin <value>`: Page margin (e.g., `10mm`, `1in`).
-- `--toc`: Include a table of contents (optional; can be deferred if hard).
-- `--verbose`: Print debug logs.
+- `--page-size <A4|A3|A5|Letter|Legal|Tabloid>`: Page size preset (default: A4).
+- `--margin <value>`: Page margin with format validation (e.g., `10mm`, `1in`, `2.5cm`).
+- `--verbose`: Print debug logs and conversion progress.
 - `--quiet`: Minimal output.
 - `--version`: Print version.
 - `--help`: Print help.
@@ -115,14 +115,18 @@ Optional:
 
 - Images referenced via relative paths must render in the PDF.
 - When an image is missing, the tool must:
-  - Exit with a non-zero code, and
-  - Show a clear error message indicating which asset failed.
+  - Exit with code `3` (input file not found), and
+  - Show a clear error message indicating which asset(s) failed to load.
+  - Include the base directory path for reference.
 
 ### 5.4 Error messages
 
 - Errors must be actionable:
   - Include which file/argument caused the problem.
-  - Suggest a fix where reasonable (e.g., “check path”, “use --css”, “install fonts”).
+  - Suggest a fix where reasonable (e.g., "check path", "install fonts").
+  - For invalid margin format, list valid units (mm, cm, in, pt, px).
+  - For conversion failures, suggest running with `--verbose` for details.
+  - For permission errors, suggest checking write access to output directory.
 
 ## 6. Non-Functional Requirements
 
@@ -149,6 +153,16 @@ Ubuntu:
 
 - Should convert typical Markdown documents (e.g., 1–5 MB) in reasonable time on a standard laptop.
 - Avoid excessive memory usage for typical documents.
+- Provide progress feedback in verbose mode for large documents.
+
+### 6.5 Progress indicator
+
+- When `--verbose` is enabled, display step-by-step progress:
+  - Reading input file (with file size)
+  - Validating assets
+  - Applying syntax highlighting
+  - Generating PDF
+  - Saving output file (with file size)
 
 ### 6.4 Determinism
 
@@ -171,19 +185,23 @@ Create `testdata/sample.md` that includes:
 - Running `md2pdf testdata/sample.md -o out.pdf` completes successfully with exit code `0`.
 - Open `out.pdf` in a PDF viewer:
   - Text is selectable and copy/paste produces correct text (including Chinese).
-  - Code blocks are readable and monospaced.
+  - Code blocks are readable, monospaced, and syntax-highlighted.
   - Images appear in the correct place.
 - Windows 11:
   - `md2pdf.exe testdata\sample.md -o out.pdf` works on a machine without Python installed.
 - Ubuntu:
   - The documented install/run method works on a clean environment.
+- Error handling:
+  - Missing image exits with code `3` and shows actionable error message.
+  - Invalid margin format exits with code `2` and shows valid format examples.
 
 ## 8. Deliverables (v0.1)
 
 - Source code
 - `Requirements.md`
+- `ImplementationPlan.md`
 - `README.md` with usage examples
 - Release artifacts:
   - Windows `.exe` (zip)
   - Ubuntu run method (instructions + optional binary)
-- `testdata/sample.md` and any required test assets
+- `testdata/sample.md` and required test assets (`testdata/images/logo.png`)

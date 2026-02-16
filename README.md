@@ -6,9 +6,11 @@ A cross-platform CLI tool that converts Markdown to text-selectable PDFs (copy/p
 
 - **Selectable Text** - PDFs produced have real text, not rasterized images
 - **Unicode Support** - Full support for English and Traditional Chinese
+- **Syntax Highlighting** - Automatic code highlighting for 300+ languages
 - **Markdown Support** - Headings, lists, blockquotes, code blocks, tables, images
-- **Customizable** - CSS styling, page size, margins
+- **Customizable** - Page size, margins, verbose output
 - **Cross-Platform** - Windows (.exe) and Linux
+- **Smart Validation** - Checks for missing images before conversion
 
 ## Installation
 
@@ -32,19 +34,13 @@ pip install .
 # Basic conversion
 md2pdf input.md -o output.pdf
 
-# With custom CSS
-md2pdf input.md --css custom.css -o output.pdf
-
-# Change page size
+# With custom page size
 md2pdf input.md --page-size Letter -o output.pdf
 
 # Custom margins
 md2pdf input.md --margin 20mm -o output.pdf
 
-# Include table of contents
-md2pdf input.md --toc -o output.pdf
-
-# Verbose output
+# Verbose output (shows progress)
 md2pdf input.md --verbose
 
 # Quiet mode
@@ -57,11 +53,9 @@ md2pdf input.md --quiet
 |--------|-------------|---------|
 | `input` | Input markdown file (required) | - |
 | `-o, --output` | Output PDF path | `<input_basename>.pdf` |
-| `--css` | Custom CSS file | Built-in style |
 | `--page-size` | Page size (A4, Letter, Legal, etc.) | A4 |
-| `--margin` | Page margin (e.g., 10mm, 1in) | 10mm |
-| `--toc` | Include table of contents | No |
-| `--verbose` | Print debug logs | No |
+| `--margin` | Page margin (e.g., 10mm, 1in, 2cm) | 10mm |
+| `--verbose` | Print debug logs and progress | No |
 | `--quiet` | Minimal output | No |
 | `--version` | Show version | - |
 | `--help` | Show help | - |
