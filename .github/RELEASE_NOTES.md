@@ -61,10 +61,10 @@ md2pdf input.md --verbose
 
 ### Technical Details
 
-- **Executable Size**: ~100 MB (standalone, no Python required)
+- **Executable Size**: ~40 MB (standalone, no Python required)
 - **Python Version**: 3.10+
 - **PDF Engine**: markdown-pdf (PyMuPDF)
-- **Syntax Highlighting**: Pygments
+- **Syntax Highlighting**: Pygments (common languages)
 
 ### Full Changelog
 
