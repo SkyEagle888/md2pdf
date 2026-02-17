@@ -5,8 +5,8 @@
 - **Language**: Python 3.10+
 - **PDF Engine**: `markdown-pdf` (PyMuPDF) - lightweight, no browser needed
 - **CLI Framework**: `argparse` (stdlib)
-- **Syntax Highlighting**: `Pygments` - 300+ language support
-- **Packaging**: PyInstaller for Windows .exe (~29MB, standalone)
+- **Syntax Highlighting**: `Pygments` - explicit lexer imports for 33 language aliases (no dynamic loading)
+- **Packaging**: PyInstaller for Windows .exe (~40MB, standalone; optimized from 102MB)
 - **Version Management**: `hatch-vcs` for automatic versioning from Git tags
 
 ---
@@ -71,6 +71,9 @@
 ### Phase 5: Distribution
 
 - [x] 5.1 Windows: Build .exe with PyInstaller
+- [x] 5.1.1 Create custom PyInstaller hook (`hooks/hook-pygments.py`) to minimize lexer inclusion
+- [x] 5.1.2 Add `--exclude-module` flags for numpy, scipy, pandas, matplotlib
+- [x] 5.1.3 Optimize executable size from 102MB to ~40MB
 - [ ] 5.2 Ubuntu: Document installation methods (pipx, pip)
 - [x] 5.3 Create release artifacts (zip for Windows)
 - [x] 5.4 Configure automatic versioning with hatch-vcs
@@ -107,6 +110,9 @@ build-backend = "hatchling.build"
 source = "vcs"
 ```
 
+**Build-time exclusions** (via PyInstaller `--exclude-module`):
+- `numpy`, `scipy`, `pandas`, `matplotlib` — not used by md2pdf; excluding reduces executable from 102MB to ~40MB
+
 ---
 
 ## File Structure (Current)
@@ -120,14 +126,16 @@ md2pdf/
 │   ├── __init__.py         # Dynamic version import
 │   ├── __main__.py         # Package entry point
 │   ├── cli.py              # CLI entry point with argparse
-│   ├── converter.py        # Markdown → PDF (markdown-pdf + Pygments)
+│   ├── converter.py        # Markdown → PDF (explicit lexer imports, 33 aliases)
 │   └── assets.py           # Image path resolution
+├── hooks/
+│   └── hook-pygments.py    # PyInstaller hook: includes only needed lexers
 ├── testdata/
 │   ├── sample.md           # Test document
 │   └── images/
 │       └── logo.png        # Test image asset
 ├── dist/
-│   ├── md2pdf.exe          # Standalone executable (~29MB)
+│   ├── md2pdf.exe          # Standalone executable (~40MB, optimized)
 │   └── md2pdf-win64.zip
 ├── project-documents/
 │   ├── Requirements.md
@@ -173,8 +181,14 @@ md2pdf/
 
 ### Syntax Highlighting
 - Automatic language detection for code blocks
-- Support for 300+ languages via Pygments
+- **Explicit lexer imports** in `converter.py` (no dynamic `get_lexer_by_name()`)
+- **33 language aliases** supported via `LEXER_MAP` (Python, JS, TS, Bash, JSON, YAML, HTML, CSS, SQL, Java, Go, Rust, C, C++, Markdown, Diff, INI, TOML, etc.)
 - CSS injected into PDF for proper styling
+
+### Build Optimization
+- **Custom PyInstaller hook** (`hooks/hook-pygments.py`) includes only required lexer modules
+- **Excluded heavy dependencies**: numpy, scipy, pandas, matplotlib via `--exclude-module` flags
+- **Executable size reduced**: 102MB → ~40MB (61% reduction)
 
 ### Image Validation
 - Scans markdown for `![alt](path)` patterns
@@ -205,11 +219,16 @@ Reading: input.md (0.8 KB)
 ## Release Notes
 
 ### v0.1 (Current)
+- **Build optimization**: Executable size reduced from 102MB to ~40MB (61% reduction)
+  - Added custom PyInstaller hook (`hooks/hook-pygments.py`) to include only needed lexers
+  - Excluded heavy dependencies: numpy, scipy, pandas, matplotlib via `--exclude-module` flags
+- **Syntax highlighting**: Switched from dynamic `get_lexer_by_name()` to explicit lexer imports
+  - 33 language aliases supported via `LEXER_MAP`
+  - Languages: Python, JavaScript, TypeScript, Bash, PowerShell, JSON, YAML, HTML, XML, CSS, SQL, Java, Kotlin, Scala, Go, Rust, C, C++, Markdown, Diff, INI, TOML
 - Switched from Playwright to markdown-pdf/PyMuPDF for smaller executable
   - Original Playwright build: ~328MB
   - New markdown-pdf build: ~29MB (91% smaller)
 - No browser dependencies required
-- Added syntax highlighting with Pygments
 - Added image validation before conversion
 - Added margin format validation
 - Implemented automatic versioning with hatch-vcs

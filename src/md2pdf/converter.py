@@ -7,9 +7,76 @@ from typing import Optional
 import pygments
 from markdown_pdf import MarkdownPdf, Section
 from pygments.formatters import HtmlFormatter
-from pygments.lexers import get_lexer_by_name, guess_lexer
+from pygments.lexers import TextLexer
+
+# Explicit lexer imports for common documentation languages
+# Only these lexers will be included in the PyInstaller build
+from pygments.lexers.python import PythonLexer
+from pygments.lexers.javascript import JavascriptLexer, TypeScriptLexer
+from pygments.lexers.shell import BashLexer, PowerShellLexer
+from pygments.lexers.data import JsonLexer, YamlLexer
+from pygments.lexers.html import HtmlLexer, XmlLexer
+from pygments.lexers.css import CssLexer
+from pygments.lexers.sql import SqlLexer
+from pygments.lexers.jvm import JavaLexer
+from pygments.lexers.go import GoLexer
+from pygments.lexers.rust import RustLexer
+from pygments.lexers.c_cpp import CLexer, CppLexer
+from pygments.lexers.markup import MarkdownLexer
+from pygments.lexers.diff import DiffLexer
+from pygments.lexers.configs import IniLexer, TOMLLexer
 
 from .assets import get_asset_base_dir
+
+# Map language aliases to lexer classes (explicit, no dynamic loading)
+LEXER_MAP: dict[str, type[TextLexer]] = {
+    # Python
+    "python": PythonLexer,
+    "py": PythonLexer,
+    # JavaScript
+    "javascript": JavascriptLexer,
+    "js": JavascriptLexer,
+    # TypeScript
+    "typescript": TypeScriptLexer,
+    "ts": TypeScriptLexer,
+    # Bash/Shell
+    "bash": BashLexer,
+    "sh": BashLexer,
+    "shell": BashLexer,
+    "zsh": BashLexer,
+    # PowerShell
+    "powershell": PowerShellLexer,
+    "ps1": PowerShellLexer,
+    "pwsh": PowerShellLexer,
+    # Data formats
+    "json": JsonLexer,
+    "yaml": YamlLexer,
+    "yml": YamlLexer,
+    # Web
+    "html": HtmlLexer,
+    "xml": XmlLexer,
+    "css": CssLexer,
+    # Database
+    "sql": SqlLexer,
+    # JVM languages
+    "java": JavaLexer,
+    "kotlin": JavaLexer,  # Fallback to Java lexer
+    "scala": JavaLexer,  # Fallback to Java lexer
+    # System languages
+    "go": GoLexer,
+    "rust": RustLexer,
+    "c": CLexer,
+    "cpp": CppLexer,
+    "c++": CppLexer,
+    # Markup
+    "markdown": MarkdownLexer,
+    "md": MarkdownLexer,
+    # Config files
+    "ini": IniLexer,
+    "toml": TOMLLexer,
+    # Other
+    "diff": DiffLexer,
+}
 
 # Valid margin format: number followed by unit (mm, cm, in, pt, px)
 MARGIN_PATTERN = re.compile(r"^\d+(\.\d+)?(mm|cm|in|pt|px)$")
@@ -116,23 +183,15 @@ class Converter:
             Markdown with syntax-highlighted code blocks
         """
         # Pattern to match fenced code blocks: ```language\ncode\n```
-        code_block_pattern = r"```(\w*)\n(.*?)```"
+        code_block_pattern = r"```(\w*\+?)\n(.*?)```"
 
         def replace_code_block(match: re.Match) -> str:
-            language = match.group(1).strip()
+            language = match.group(1).strip().lower()
             code = match.group(2).strip()
 
-            try:
-                # Get lexer for the language
-                if language:
-                    lexer = get_lexer_by_name(language)
-                else:
-                    lexer = guess_lexer(code)
-            except ValueError:
-                # If language not found, use text lexer
-                from pygments.lexers import TextLexer
-
-                lexer = TextLexer()
+            # Get lexer from explicit map (no dynamic loading)
+            lexer_class = LEXER_MAP.get(language, TextLexer)
+            lexer = lexer_class()
 
             # Highlight the code
             formatter = HtmlFormatter()

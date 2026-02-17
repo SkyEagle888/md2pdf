@@ -45,9 +45,10 @@ Build a small cross-platform command-line application that converts Markdown fil
 - **Language**: Python 3.10+
 - **Markdown Parser**: `markdown-it-py` (via markdown-pdf)
 - **PDF Engine**: `PyMuPDF` - lightweight, no browser needed
-- **Syntax Highlighting**: `Pygments` - 300+ language support
-- **Packaging**: PyInstaller for Windows `.exe` (~29MB, standalone)
+- **Syntax Highlighting**: `Pygments` - 33 language aliases via explicit lexer imports
+- **Packaging**: PyInstaller for Windows `.exe` (~40MB, standalone)
 - **Version Management**: `hatch-vcs` for automatic versioning from Git tags
+- **Build Optimization**: Custom PyInstaller hook (`hooks/hook-pygments.py`) excludes unused lexers and heavy dependencies (numpy, scipy, pandas, matplotlib), reducing size from ~102MB to ~40MB
 
 ### 2.5 Rendering approach (implementation constraint for v0.1)
 
@@ -154,6 +155,7 @@ Ubuntu:
 - Should convert typical Markdown documents (e.g., 1–5 MB) in reasonable time on a standard laptop.
 - Avoid excessive memory usage for typical documents.
 - Provide progress feedback in verbose mode for large documents.
+- **Executable size optimization**: Windows executable reduced from ~102MB to ~40MB by excluding unused Pygments lexers (200+) and heavy dependencies (numpy, scipy, pandas, matplotlib) via custom PyInstaller hook.
 
 ### 6.5 Progress indicator
 
@@ -205,3 +207,4 @@ Create `testdata/sample.md` that includes:
   - Windows `.exe` (zip)
   - Ubuntu run method (instructions + optional binary)
 - `testdata/sample.md` and required test assets (`testdata/images/logo.png`)
+- `hooks/hook-pygments.py` - PyInstaller hook for minimizing executable size
