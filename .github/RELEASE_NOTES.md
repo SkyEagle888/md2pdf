@@ -1,5 +1,32 @@
 # Release Notes
 
+## v0.1.2 (2026-02-23)
+
+### 🎉 Windows Context Menu Integration
+
+#### Registry File for Right-Click Conversion
+- **Updated `md2pdf-windows.reg`** for Windows 11 context menu integration
+- Right-click on any `.md` file → "Convert to PDF"
+- Assumes `md2pdf.exe` is in your `PATH` environment variable
+- Uses embedded icon from the executable (no external .ico file needed)
+
+#### How to Use
+1. Add the `dist` folder to your PATH environment variable
+2. Double-click `assets/md2pdf-windows.reg` to register the context menu
+3. Right-click any `.md` file and select "Convert to PDF"
+
+#### Registry Details
+```reg
+[HKEY_CLASSES_ROOT\SystemFileAssociations\.md\shell\Convert to PDF]
+@="Convert to PDF"
+"Icon"="md2pdf.exe"
+
+[HKEY_CLASSES_ROOT\SystemFileAssociations\.md\shell\Convert to PDF\command]
+@="\"md2pdf.exe\" \"%1\""
+```
+
+---
+
 ## v0.1.1 (2026-02-17)
 
 ### 🎉 Major Improvements
