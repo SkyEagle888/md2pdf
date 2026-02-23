@@ -1,5 +1,30 @@
 # Release Notes
 
+## v0.1.4 (2026-02-23)
+
+### 🐛 Bug Fixes
+
+#### Windows Context Menu Fix
+- **Fixed**: Context menu command now uses full absolute paths
+- **Fixed**: Removed duplicate menu entries (was showing 2x "Convert to PDF")
+- **Fixed**: Command now wraps in `cmd.exe /c` for proper argument handling
+- **Note**: Users must edit `md2pdf-windows.reg` to update the path before merging
+
+#### Registry File Changes
+```reg
+; Old (didn't work - PATH not resolved)
+@="\"md2pdf.exe\" \"%1\""
+
+; New (works - full path with cmd wrapper)
+@="cmd.exe /c \"\"C:\\path\\to\\md2pdf.exe\" \"%%1\"\""
+```
+
+### 📦 Updated Files
+- `assets/md2pdf-windows.reg` - Full path + cmd.exe wrapper
+- `dist/md2pdf.exe` - Rebuilt with pygments included
+
+---
+
 ## v0.1.3 (2026-02-23)
 
 ### 🎉 Windows 11 Context Menu Integration
