@@ -1,0 +1,13 @@
+Windows Registry Editor Version 5.00
+
+; Add "Convert to PDF" to Windows 11 context menu for .md files
+; Assumes:
+;   1. md2pdf.exe is in your PATH (e.g., dist folder added to environment variables)
+;   2. The .exe has the icon embedded during build
+
+[HKEY_CLASSES_ROOT\SystemFileAssociations\.md\shell\Convert to PDF]
+@="Convert to PDF"
+"Icon"="md2pdf.exe"
+
+[HKEY_CLASSES_ROOT\SystemFileAssociations\.md\shell\Convert to PDF\command]
+@="\"md2pdf.exe\" \"%1\""
