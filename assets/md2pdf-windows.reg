@@ -2,20 +2,25 @@ Windows Registry Editor Version 5.00
 
 ; Add "Convert to PDF" to Windows 11 context menu for .md files
 ;
-; IMPORTANT: Update the paths below to match your installation!
-; Default assumes md2pdf.exe is at: C:\Projects\md2pdf\dist\md2pdf.exe
+; IMPORTANT: Update ALL paths below to match your installation!
+; Default assumes md2pdf is installed at: C:\Projects\md2pdf\
+;
+; Files needed:
+;   - md2pdf.bat (batch wrapper that handles quoted filenames)
+;   - dist/md2pdf.exe (the actual executable)
 ;
 ; Usage:
-;   1. Edit this .reg file and replace all paths with your actual md2pdf.exe location
-;   2. Remove old entries:
+;   1. Copy md2pdf.bat and dist/ folder to your installation directory
+;   2. Edit this .reg file and update ALL paths
+;   3. Remove old entries:
 ;      reg delete "HKEY_CLASSES_ROOT\SystemFileAssociations\.md\shell\Convert to PDF" /f
-;   3. Double-click this .reg file to merge
-;   4. Restart Explorer: Stop-Process -Name explorer -Force
-;   5. Right-click any .md file → Show more options → Convert to PDF
+;   4. Double-click this .reg file to merge
+;   5. Restart Explorer: Stop-Process -Name explorer -Force
+;   6. Right-click any .md file → Show more options → Convert to PDF
 
 [HKEY_CLASSES_ROOT\SystemFileAssociations\.md\shell\Convert to PDF]
 @="Convert to PDF"
 "Icon"="C:\\Projects\\md2pdf\\dist\\md2pdf.exe"
 
 [HKEY_CLASSES_ROOT\SystemFileAssociations\.md\shell\Convert to PDF\command]
-@="cmd.exe /c \"\"C:\\Projects\\md2pdf\\dist\\md2pdf.exe\" \"%*\"\""
+@="cmd.exe /c \"\"C:\\Projects\\md2pdf\\assets\\md2pdf.bat\" \"%%1\"\""
