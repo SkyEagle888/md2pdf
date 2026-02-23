@@ -7,5 +7,6 @@ set "filename=%~1"
 
 REM Call the actual exe (unquoted args to avoid PyInstaller issue)
 REM Update the path below to match your installation!
-C:\Projects\md2pdf\dist\md2pdf.exe %filename%
+REM --skip-validation: Skip image validation for README files with missing images
+C:\Projects\md2pdf\dist\md2pdf.exe %filename% --skip-validation
 
