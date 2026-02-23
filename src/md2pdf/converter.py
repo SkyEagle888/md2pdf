@@ -161,6 +161,10 @@ class Converter:
         missing_images = []
 
         for img_path in image_paths:
+            # Skip URLs (http://, https://, data URIs, etc.)
+            if img_path.startswith(("http://", "https://", "data:")):
+                continue
+            
             # Resolve relative to base directory
             resolved_path = base_dir / img_path
             if not resolved_path.exists():
