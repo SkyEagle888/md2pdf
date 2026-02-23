@@ -23,4 +23,4 @@ Windows Registry Editor Version 5.00
 "Icon"="C:\\Projects\\md2pdf\\dist\\md2pdf.exe"
 
 [HKEY_CLASSES_ROOT\SystemFileAssociations\.md\shell\Convert to PDF\command]
-@="cmd.exe /c \"\"C:\\Projects\\md2pdf\\assets\\md2pdf.bat\" \"%%1\"\""
+@="C:\\Projects\\md2pdf\\assets\\md2pdf.bat \"%1\""
