@@ -2,26 +2,49 @@
 
 ## v0.1.4 (2026-02-23)
 
+### 🎉 Windows Context Menu Integration
+
+#### Right-Click to Convert
+- **Added `md2pdf.bat`** - Batch wrapper that handles quoted filenames from Windows
+- **Updated `md2pdf-windows.reg`** - Registry file for Windows 11 context menu
+- Right-click on any `.md` file → **"Show more options"** → **"Convert to PDF"**
+- Auto-adds `--skip-validation` flag to handle README files with missing images
+
+#### How to Use
+1. Copy `dist/md2pdf.exe` and `assets/md2pdf.bat` to installation folder
+2. Edit `md2pdf.bat` with your installation path
+3. Edit `md2pdf-windows.reg` with your installation paths
+4. Run as Administrator to register the context menu
+5. Right-click any `.md` file → "Show more options" → "Convert to PDF"
+
+> **Tip:** Use `Shift + Right-click` to open the extended menu directly on Windows 11.
+
+### 🆕 New CLI Option
+
+#### --skip-validation Flag
+```bash
+md2pdf README.md -o README.pdf --skip-validation
+```
+- Skips image existence validation
+- Useful for README files with missing images or URLs
+- Auto-enabled for context menu conversions
+
 ### 🐛 Bug Fixes
 
-#### Windows Context Menu Fix
-- **Fixed**: Context menu command now uses full absolute paths
-- **Fixed**: Removed duplicate menu entries (was showing 2x "Convert to PDF")
-- **Fixed**: Command now wraps in `cmd.exe /c` for proper argument handling
-- **Note**: Users must edit `md2pdf-windows.reg` to update the path before merging
+#### Image URL Validation
+- Skip validation for `http://`, `https://`, and `data:` URLs
+- Only validate local file paths
+- Fixes errors with README badge URLs (e.g., shields.io)
 
-#### Registry File Changes
-```reg
-; Old (didn't work - PATH not resolved)
-@="\"md2pdf.exe\" \"%1\""
-
-; New (works - full path with cmd wrapper)
-@="cmd.exe /c \"\"C:\\path\\to\\md2pdf.exe\" \"%%1\"\""
-```
+#### PyInstaller Build
+- Fixed PyInstaller exe argument handling with batch wrapper
+- Simplified registry command (no cmd.exe wrapper needed)
 
 ### 📦 Updated Files
-- `assets/md2pdf-windows.reg` - Full path + cmd.exe wrapper
-- `dist/md2pdf.exe` - Rebuilt with pygments included
+- `assets/md2pdf.bat` - Batch wrapper for context menu (new)
+- `assets/md2pdf-windows.reg` - Windows 11 context menu registry
+- `src/md2pdf/cli.py` - Added --skip-validation flag
+- `src/md2pdf/converter.py` - Skip URL validation, added skip_validation parameter
 
 ---
 

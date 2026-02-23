@@ -37,12 +37,33 @@ Download the latest release from the [Releases](https://github.com/SkyEagle888/m
 
 Right-click on any `.md` file to convert it directly:
 
-1. Double-click `assets/md2pdf-windows.reg` to register the context menu
-2. Restart Windows Explorer (or log out/in)
-3. Right-click any `.md` file → **"Show more options"** → **"Convert to PDF"**
+1. **Copy files to your installation folder** (e.g., `C:\Program Files\md2pdf`):
+   - `dist/md2pdf.exe` - The main executable
+   - `assets/md2pdf.bat` - Batch wrapper for context menu
+
+2. **Edit `md2pdf.bat`** - Update the path to match your installation:
+   ```batch
+   C:\Program Files\md2pdf\dist\md2pdf.exe %filename% --skip-validation
+   ```
+
+3. **Edit `md2pdf-windows.reg`** - Update both paths to match your installation
+
+4. **Register the context menu** (Run as Administrator):
+   ```powershell
+   # Delete old entries (if any)
+   reg delete "HKEY_CLASSES_ROOT\SystemFileAssociations\.md\shell\Convert to PDF" /f
+   
+   # Merge the new registry
+   reg import C:\Program Files\md2pdf\assets\md2pdf-windows.reg
+   ```
+
+5. **Restart Windows Explorer** (or log out/in)
+
+6. **Right-click any `.md` file** → **"Show more options"** → **"Convert to PDF"**
 
 > **Note:** On Windows 11, the menu appears under "Show more options" by design.  
-> Tip: Use `Shift + Right-click` to open the extended menu directly.
+> **Tip:** Use `Shift + Right-click` to open the extended menu directly.  
+> **Note:** The `--skip-validation` flag is auto-added to handle README files with missing images.
 
 ### Linux
 
@@ -133,6 +154,7 @@ md2pdf readme.md \
 | `--margin` | Page margin | `10mm` | Format: `<number><unit>` (e.g., `10mm`, `1in`) |
 | `--verbose` | Show progress and debug logs | Off | Recommended for large files |
 | `--quiet` | Minimal output | Off | Mutually exclusive with `--verbose` |
+| `--skip-validation` | Skip image validation | Off | Useful for READMEs with missing images |
 | `--version` | Show version number | — | — |
 | `--help` | Show help message | — | — |
 
