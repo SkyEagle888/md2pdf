@@ -1,5 +1,36 @@
 # Release Notes
 
+## v0.1.3 (2026-02-23)
+
+### 🎉 Windows 11 Context Menu Integration
+
+#### Right-Click to Convert
+- **Added `md2pdf-windows.reg`** for Windows 11 context menu integration
+- Right-click on any `.md` file → **"Show more options"** → **"Convert to PDF"**
+- Uses embedded icon from the executable (no external .ico file needed)
+
+#### Registry Features
+- **Dual registration method:**
+  - `SystemFileAssociations` — Works in "Show more options" menu
+  - `mdfile` ProgID — Attempts native menu integration
+- Assumes `md2pdf.exe` is in your PATH environment variable
+
+#### How to Use
+1. Download the release and extract
+2. Add the `dist` folder to your PATH environment variable
+3. Double-click `assets/md2pdf-windows.reg` to register
+4. Restart Windows Explorer (or log out/in)
+5. Right-click any `.md` file → **"Show more options"** → **"Convert to PDF"**
+
+> **Tip:** Use `Shift + Right-click` to open the extended menu directly on Windows 11.
+
+#### Assets Added
+- `md2pdf-logo-1.ico` — Windows icon embedded in .exe
+- `md2pdf-logo-1.png` — Logo image
+- `md2pdf-logo-2.png` — Logo image
+
+---
+
 ## v0.1.2 (2026-02-23)
 
 ### 🎉 Windows Context Menu Integration
