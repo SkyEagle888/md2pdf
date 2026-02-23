@@ -89,6 +89,12 @@ Examples:
     )
 
     parser.add_argument(
+        "--skip-validation",
+        action="store_true",
+        help="Skip image validation (allow missing images)",
+    )
+
+    parser.add_argument(
         "--version",
         action="version",
         version=f"md2pdf {__version__}",
@@ -149,7 +155,11 @@ def main(args: list[str] | None = None) -> int:
         if not parsed.quiet:
             logger.info(f"Converting: {input_path} -> {output_path}")
 
-        converter.convert_file(input_path, output_path, verbose=parsed.verbose)
+        converter.convert_file(
+            input_path, output_path,
+            verbose=parsed.verbose,
+            skip_validation=parsed.skip_validation
+        )
 
         if not parsed.quiet:
             logger.info(f"Success! PDF created: {output_path}")
@@ -159,7 +169,12 @@ def main(args: list[str] | None = None) -> int:
     except FileNotFoundError as e:
         error_msg = str(e)
         if "Missing image" in error_msg:
-            logger.error(f"Missing asset: {error_msg}")
+            if parsed.skip_validation:
+                # Skip validation was enabled but still got FileNotFoundError
+                logger.error(f"File not found: {error_msg}")
+            else:
+                logger.error(f"Missing asset: {error_msg}")
+                logger.info("Tip: Use --skip-validation to bypass image validation")
         else:
             logger.error(f"Input file not found: {error_msg}")
         return EXIT_INPUT_NOT_FOUND

@@ -207,7 +207,8 @@ class Converter:
         return re.sub(code_block_pattern, replace_code_block, markdown_content, flags=re.DOTALL)
 
     def convert_file(
-        self, input_path: Path, output_path: Path, verbose: bool = False
+        self, input_path: Path, output_path: Path, verbose: bool = False,
+        skip_validation: bool = False
     ) -> None:
         """
         Convert a markdown file to PDF.
@@ -215,6 +216,8 @@ class Converter:
         Args:
             input_path: Path to input markdown file
             output_path: Path to output PDF file
+            verbose: Whether to print verbose output
+            skip_validation: Whether to skip image validation
 
         Raises:
             FileNotFoundError: If input file doesn't exist
@@ -233,11 +236,11 @@ class Converter:
         if verbose:
             print(f"  Reading: {input_path} ({file_size_kb:.1f} KB)")
 
-        # Validate that all referenced images exist
-        self._validate_images(markdown_content, self.base_dir)
-
-        if verbose:
-            print("  Validating assets...")
+        # Validate images (unless skipped)
+        if not skip_validation:
+            if verbose:
+                print("  Validating assets...")
+            self._validate_images(markdown_content, self.base_dir)
 
         # Apply syntax highlighting to code blocks
         markdown_content = self._apply_syntax_highlighting(markdown_content)
