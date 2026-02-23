@@ -13,23 +13,36 @@ A cross-platform CLI tool that converts Markdown to text-selectable, copy/paste-
 - **Unicode Support** — Full support for English and Traditional Chinese characters.
 - **Smart Validation** — Checks for missing images before conversion with clear error messages.
 - **Progress Indicator** — Step-by-step feedback in verbose mode.
-- **Cross-Platform** — Standalone Windows .exe (~29MB) and Python package for Linux.
+- **Cross-Platform** — Standalone Windows .exe (~40MB) and Python package for Linux.
+- **Context Menu** — Right-click `.md` files to convert (Windows 11).
 - **Customizable** — Page size, margins, and output control.
 
 ## Installation
 
 ### Windows
 
-Download the latest release from the [Releases](https://github.com/yourusername/md2pdf/releases) page:
+Download the latest release from the [Releases](https://github.com/SkyEagle888/md2pdf/releases) page:
 
 1. Download `md2pdf-win64.zip`
 2. Extract to a folder (e.g., `C:\Program Files\md2pdf`)
-3. Add the folder to your `PATH`, or run directly:
+3. Add the folder to your `PATH` environment variable
+4. Run from anywhere:
    ```powershell
-   .\md2pdf.exe input.md -o output.pdf
+   md2pdf input.md -o output.pdf
    ```
 
 **No Python installation required.**
+
+#### Windows 11 Context Menu (Optional)
+
+Right-click on any `.md` file to convert it directly:
+
+1. Double-click `assets/md2pdf-windows.reg` to register the context menu
+2. Restart Windows Explorer (or log out/in)
+3. Right-click any `.md` file → **"Show more options"** → **"Convert to PDF"**
+
+> **Note:** On Windows 11, the menu appears under "Show more options" by design.  
+> Tip: Use `Shift + Right-click` to open the extended menu directly.
 
 ### Linux
 
@@ -240,9 +253,10 @@ md2pdf complex.md --verbose -o complex.pdf
 # Install dependencies
 pip install -e ".[dev]"
 
-# Build Windows executable with minimized dependencies
+# Build Windows executable with embedded icon
 # Excludes numpy, scipy, pandas to reduce size from 102MB to ~40MB
 pyinstaller --onefile --name md2pdf \
+  --icon=assets/md2pdf-logo-1.ico \
   --additional-hooks-dir=./hooks \
   --exclude-module numpy \
   --exclude-module scipy \
@@ -250,7 +264,7 @@ pyinstaller --onefile --name md2pdf \
   --exclude-module matplotlib \
   src/md2pdf/__main__.py
 
-# Output: dist/md2pdf.exe (~40MB, down from ~102MB)
+# Output: dist/md2pdf.exe (~40MB with embedded icon)
 ```
 
 **Note:** The build uses a custom PyInstaller hook (`hooks/hook-pygments.py`) that includes only commonly-used language lexers (Python, JavaScript, TypeScript, Bash, JSON, YAML, etc.) and excludes 200+ unused lexers. Heavy dependencies (numpy, scipy, pandas, matplotlib) are explicitly excluded as they are not needed by md2pdf.
@@ -271,6 +285,11 @@ md2pdf/
 │       └── logo.png     # Test image
 ├── hooks/
 │   └── hook-pygments.py # PyInstaller hook to minimize Pygments footprint
+├── assets/
+│   ├── md2pdf-logo-1.ico    # Windows icon for .exe
+│   ├── md2pdf-logo-1.png    # Logo image
+│   ├── md2pdf-logo-2.png    # Logo image
+│   └── md2pdf-windows.reg   # Windows 11 context menu registry
 ├── project-documents/
 │   ├── Requirements.md
 │   └── ImplementationPlan.md

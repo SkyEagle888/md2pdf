@@ -1,13 +1,34 @@
 Windows Registry Editor Version 5.00
 
 ; Add "Convert to PDF" to Windows 11 context menu for .md files
+;
 ; Assumes:
 ;   1. md2pdf.exe is in your PATH (e.g., dist folder added to environment variables)
 ;   2. The .exe has the icon embedded during build
+;
+; Usage:
+;   1. Remove old entry: reg delete "HKEY_CLASSES_ROOT\SystemFileAssociations\.md\shell\Convert to PDF" /f
+;   2. Double-click this .reg file to merge
+;   3. Restart Explorer: Stop-Process -Name explorer -Force
+;   4. Right-click any .md file
 
+; Method 1: SystemFileAssociations (works in "Show more options")
 [HKEY_CLASSES_ROOT\SystemFileAssociations\.md\shell\Convert to PDF]
 @="Convert to PDF"
 "Icon"="md2pdf.exe"
 
 [HKEY_CLASSES_ROOT\SystemFileAssociations\.md\shell\Convert to PDF\command]
 @="\"md2pdf.exe\" \"%1\""
+
+; Method 2: Also register under mdfile ProgID for Windows 11 native menu
+[HKEY_CLASSES_ROOT\mdfile\shell\ConvertToPDF]
+@="Convert to PDF"
+"Icon"="md2pdf.exe"
+"CommandStateSync"=""
+
+[HKEY_CLASSES_ROOT\mdfile\shell\ConvertToPDF\command]
+@="\"md2pdf.exe\" \"%1\""
+
+; Ensure .md is associated with mdfile ProgID
+[HKEY_CLASSES_ROOT\.md]
+@="mdfile"

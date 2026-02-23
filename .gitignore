@@ -197,6 +197,9 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+# Token usage output (development artifact)
+token-usage-output.txt
+
 # Cursor
 #  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
 #  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
